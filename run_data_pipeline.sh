@@ -5,7 +5,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 PY=.venv/bin/python
-RAW="${1:-data/raw/accepted_2007_to_2018Q4.csv.gz}"
+RAW="${1:-}"
+if [ -z "$RAW" ]; then
+  for f in data/raw/accepted_2007_to_2018Q4.csv data/raw/accepted_2007_to_2018Q4.csv.gz; do
+    [ -f "$f" ] && RAW="$f" && break
+  done
+fi
+[ -n "$RAW" ] || { echo "Ham dosya yok: data/raw/accepted_2007_to_2018Q4.csv(.gz)"; exit 1; }
 
 echo "== 1/3 Süzme ve sızıntı ayıklama =="
 $PY src/filter_data.py --input "$RAW" --outdir data/processed --report reports/filter_log.md
