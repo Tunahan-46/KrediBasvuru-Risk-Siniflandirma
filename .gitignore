@@ -1,0 +1,14 @@
+# Veri (boyut nedeniyle depoya girmez, Drive'da tutulur)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store

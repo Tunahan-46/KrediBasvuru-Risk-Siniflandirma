@@ -1,0 +1,16 @@
+degisken,sutun,rol,donusum
+Kredi durumu,loan_status,bagimli,"Fully Paid -> 0, Charged Off -> 1"
+Kredi tutari,loan_amnt,bagimsiz,Dogrudan
+Yillik gelir,annual_inc,bagimsiz,"Logaritma; %99 ustu uc degerler kirpilir"
+Borc/gelir orani,dti,bagimsiz,Dogrudan
+Calisma suresi,emp_length,bagimsiz,"Metin; '< 1 year' -> 0, '10+ years' -> 10, eksik -> ayri seviye"
+Ev sahipligi,home_ownership,bagimsiz,Kategorik; one-hot
+Kredi amaci,purpose,bagimsiz,Kategorik (14 seviye); one-hot
+FICO puan araligi,"fico_range_low, fico_range_high",bagimsiz,Iki sinirin ortalamasi
+Acik hesap sayisi,open_acc,bagimsiz,Dogrudan
+Son 2 yildaki gecikme sayisi,delinq_2yrs,bagimsiz,Dogrudan
+Doner kredi kullanim orani,revol_util,bagimsiz,Yuzde isareti kaldirilip sayiya cevrilir
+Son 6 aydaki sorgu sayisi,inq_last_6mths,bagimsiz,Dogrudan
+En eski kredi hesabinin yasi,earliest_cr_line,bagimsiz,issue_d ile farki ay cinsinden
+Tutar/gelir,loan_amnt / annual_inc,turetilmis,Kredi tutarinin yillik gelire orani
+Kurum notu,grade,karsilastirma,Modele verilmez; ayri dosyada
