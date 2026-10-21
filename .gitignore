@@ -12,3 +12,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Model dosyaları dışında
+backend/**/__pycache__/
