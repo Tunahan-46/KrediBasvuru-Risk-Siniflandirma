@@ -15,3 +15,9 @@ __pycache__/
 
 # Model dosyaları dışında
 backend/**/__pycache__/
+
+# Yerel geliştirme veritabanı
+backend/db/*.sqlite3
+backend/.env
+reports/logs/
+models/main_model_uncalibrated.joblib

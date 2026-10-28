@@ -1,0 +1,73 @@
+{
+  "model_version": "xgb-fixed-platt-2026w4",
+  "selected": "XGBoost (sabit parametre, erken durdurma)",
+  "calibration": "Platt",
+  "calibration_fit_on": "2014 (tamamı); seçim A=Oca–Haz, ölçüm B=Tem–Ara",
+  "thresholds": {
+    "low": 0.1,
+    "high": 0.2,
+    "note": "Geçici; kalıcı eşikler İP 4'te net kâra göre"
+  },
+  "valid_metrics_B": {
+    "Ham (kalibre edilmemiş)": {
+      "ROC-AUC": 0.6577470723832166,
+      "KS": 0.2289984709326608,
+      "Brier": 0.11682567000389099,
+      "Log-loss": 0.38840436935424805,
+      "ECE": 0.010311529830658087,
+      "Ort. tahmin": 0.1315179169178009,
+      "Gözlenen": 0.141256966285935
+    },
+    "Platt (A'da uydurulmuş)": {
+      "ROC-AUC": 0.6577470723832166,
+      "KS": 0.2289984709326608,
+      "Brier": 0.11678864644355001,
+      "Log-loss": 0.3882285175140476,
+      "ECE": 0.00864655120226029,
+      "Ort. tahmin": 0.13387297574434207,
+      "Gözlenen": 0.141256966285935
+    },
+    "İzotonik (A'da uydurulmuş)": {
+      "ROC-AUC": 0.6573696347105313,
+      "KS": 0.22865806018280538,
+      "Brier": 0.11680386960506439,
+      "Log-loss": 0.38875582814216614,
+      "ECE": 0.008302150107642672,
+      "Ort. tahmin": 0.13383269309997559,
+      "Gözlenen": 0.141256966285935
+    }
+  },
+  "risk_groups_B": {
+    "Düşük": {
+      "pay": 0.3398995751255311,
+      "gozlenen_batik": 0.07133116883116883,
+      "ort_pd": 0.06976939076879139
+    },
+    "Orta": {
+      "pay": 0.5072559730728908,
+      "gozlenen_batik": 0.15307299031872076,
+      "ort_pd": 0.14359304141282575
+    },
+    "Yüksek": {
+      "pay": 0.1528444518015781,
+      "gozlenen_batik": 0.2575451263537906,
+      "ort_pd": 0.24416955327467466
+    }
+  },
+  "params": {
+    "learning_rate": 0.05,
+    "max_depth": 5,
+    "min_child_weight": 10.0,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 1.0,
+    "reg_alpha": 0.0,
+    "gamma": 0.0,
+    "scale_pos_weight": 1.0,
+    "n_estimators": 206
+  },
+  "n_features": 30,
+  "train": "2007–2013 (172.988)",
+  "valid": "2014 (162.570)",
+  "created": "2026-10-28"
+}

@@ -1,0 +1,92 @@
+{
+  "selected": "XGBoost (sabit parametre, erken durdurma)",
+  "params": {
+    "learning_rate": 0.05,
+    "max_depth": 5,
+    "min_child_weight": 10.0,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 1.0,
+    "reg_alpha": 0.0,
+    "gamma": 0.0,
+    "scale_pos_weight": 1.0,
+    "n_estimators": 206
+  },
+  "n_trials": {},
+  "mode": "fixed",
+  "valid_metrics": {
+    "Lojistik regresyon (3. hafta)": {
+      "ROC-AUC": 0.6507138017304723,
+      "Gini": 0.30142760346094466,
+      "KS": 0.21943279379266406,
+      "Brier": 0.2420319145682975
+    },
+    "XGBoost varsayılan": {
+      "ROC-AUC": 0.6509433520918051,
+      "Gini": 0.3018867041836102,
+      "KS": 0.21940616581080402,
+      "Brier": 0.11474720388650894
+    },
+    "LightGBM varsayılan": {
+      "ROC-AUC": 0.6521777732826239,
+      "Gini": 0.3043555465652479,
+      "KS": 0.22163556116175293,
+      "Brier": 0.11461206739150581
+    },
+    "XGBoost (sabit parametre, erken durdurma)": {
+      "ROC-AUC": 0.656121502963621,
+      "Gini": 0.3122430059272421,
+      "KS": 0.2269493292653718,
+      "Brier": 0.11420208215713501
+    },
+    "LightGBM (sabit parametre, erken durdurma)": {
+      "ROC-AUC": 0.6559946136327839,
+      "Gini": 0.31198922726556777,
+      "KS": 0.22673505133287158,
+      "Brier": 0.11421721228442089
+    }
+  },
+  "feature_importance": {
+    "fico": 0.13657491550511275,
+    "purpose_small_business": 0.06819234953213885,
+    "inq_last_6mths": 0.06567373144597281,
+    "annual_inc": 0.0633208077625566,
+    "purpose_credit_card": 0.0602011807055704,
+    "emp_length_missing": 0.0447903990892676,
+    "purpose_other": 0.04291987799221427,
+    "home_ownership_MORTGAGE": 0.04078814421298532,
+    "home_ownership_RENT": 0.036044866863633035,
+    "loan_to_income": 0.03450720161548783,
+    "purpose_debt_consolidation": 0.033699927869601666,
+    "purpose_medical": 0.02755066515276956,
+    "dti": 0.02734445386366117,
+    "purpose_moving": 0.025252508542987273,
+    "revol_util": 0.025117970984015723,
+    "emp_length_num": 0.02261697779435469,
+    "loan_amnt": 0.02248016071480916,
+    "purpose_major_purchase": 0.02097324607185947,
+    "credit_age_months": 0.020570650901614442,
+    "open_acc": 0.020218470066834703,
+    "purpose_house": 0.019964647361134402,
+    "purpose_vacation": 0.017885985660073475,
+    "delinq_2yrs": 0.017784927763610323,
+    "purpose_home_improvement": 0.016890352200166135,
+    "purpose_wedding": 0.015825454425164396,
+    "home_ownership_OWN": 0.015745023006207844,
+    "purpose_educational": 0.015490703645186954,
+    "purpose_infrequent_sklearn": 0.015102477095409109,
+    "purpose_car": 0.013364504389094612,
+    "home_ownership_infrequent_sklearn": 0.013107417766505416
+  },
+  "train_rows": 172988,
+  "valid_rows": 162570,
+  "n_features": 30,
+  "seconds": {
+    "XGBoost varsayılan": 1.4,
+    "LightGBM varsayılan": 1.0,
+    "XGBoost (sabit parametre, erken durdurma) – erken durdurma": 6.0,
+    "XGBoost (sabit parametre, erken durdurma)": 0.7,
+    "LightGBM (sabit parametre, erken durdurma) – erken durdurma": 2.4,
+    "LightGBM (sabit parametre, erken durdurma)": 0.5
+  }
+}

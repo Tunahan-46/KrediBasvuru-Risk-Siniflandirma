@@ -14,8 +14,8 @@ data/processed/    Süzülmüş ve bölünmüş Parquet dosyaları (depoya girme
 data/              Sızıntı sütunu listesi, değişken sözlüğü
 src/               Veri hazırlama, ön işleme hattı ve model betikleri
 models/            Eğitilmiş model dosyaları (ön işleme + model, joblib)
-backend/           FastAPI uygulaması, Pydantic şemaları, PostgreSQL şeması, duman testi
-frontend/          Next.js ön yüz iskeleti
+backend/           FastAPI uygulaması, Pydantic şemaları, SQLAlchemy ORM, PostgreSQL şeması, duman testi
+frontend/          Next.js ön yüz (ana sayfa, başvuru formu, sonuç, geçmiş)
 notebooks/         Keşifsel analiz defteri
 reports/           EDA özeti, model günlükleri ve grafikler
 ```
@@ -94,11 +94,72 @@ Arka ucu çalıştırma: `.venv/bin/uvicorn backend.app.main:app --reload --port
 | Kurum notu A–G – doğrulama (ön bilgi) | 0,650 | 0,237 | – |
 | Kurum alt notu A1–G5 – doğrulama (ön bilgi) | 0,660 | 0,237 | – |
 
-Olasılıklar sınıf ağırlığı nedeniyle henüz kalibre değildir; `/predict` eşikleri (0,35 / 0,55) geçicidir.
+Temel çizginin olasılıkları sınıf ağırlığı nedeniyle kalibre değildir; 4. haftadan itibaren `/predict` kalibre ana modeli kullanır.
+
+## Arka uç ve veritabanı (4. hafta)
+
+```bash
+.venv/bin/uvicorn backend.app.main:app --reload --port 8000     # varsayılan: SQLite (backend/db/dev.sqlite3)
+docker compose up -d db                                           # PostgreSQL 16 (yaklaşık 100 MB imaj)
+DATABASE_URL=postgresql+psycopg://kredilens:kredilens@localhost:5432/kredilens .venv/bin/uvicorn backend.app.main:app --port 8000
+.venv/bin/python backend/test_api.py                              # duman testi (geçici SQLite ile)
+.venv/bin/python backend/db/print_ddl.py                          # ORM'den PostgreSQL DDL; backend/db/schema.sql ile karşılaştırma
+```
+
+| Uç nokta | İşlev |
+|---|---|
+| `GET /health` | Servis, model sürümü, kalibrasyon durumu, eşikler, veritabanı bağlantısı |
+| `POST /predict` | Olasılık + risk grubu; başvuru ve tahmin `applications` / `predictions` tablolarına yazılır |
+| `GET /applications?limit=` | Başvuru geçmişi (en yeni önce) |
+| `GET /applications/{id}` | Tek başvuru ve son tahmini |
+
+Model yükleme sırası: `models/main_model.joblib` + `models/model_card.json` (kalibre ana model) varsa onlar; yoksa
+`models/baseline_logreg.joblib` geçici eşiklerle (0,35 / 0,55, kalibre değil).
+
+## Ön yüz (4. hafta)
+
+```bash
+cd frontend && npm install && npm run dev      # http://localhost:3000
+```
+
+Sayfalar: `/` ana sayfa, `/basvuru` yeni başvuru formu (POST /predict), `/sonuc/[id]` sonuç, `/gecmis` başvuru geçmişi.
+Ayrıntı: `frontend/README.md`.
+
+## Ana model, kalibrasyon ve eşikler (İP 3, 2. yarı, 4. hafta)
+
+```bash
+./run_main_model.sh                              # hafif koşu: Optuna yok, 4 çekirdek, en çok 1.000 ağaç (~1 dk)
+TRIALS=10 NJOBS=4 ./run_main_model.sh            # Optuna araması (5. hafta planı)
+```
+
+| Adım | Betik | Çıktı |
+|---|---|---|
+| XGBoost / LightGBM (erken durdurma; `--trials N` ile Optuna) | `src/train_boosting.py` | `models/main_model_uncalibrated.joblib`, `reports/boosting_log.md`, ROC / önem grafikleri |
+| Kalibrasyon (Platt / izotonik) ve geçici eşikler | `src/calibrate.py`, `src/calibration.py` | `models/main_model.joblib`, `models/model_card.json`, `reports/calibration_log.md`, güvenilirlik eğrisi |
+| Gecikme sayısı yan denemesi | `src/check_delinq.py` | `reports/delinq_check.md` |
+
+### Sonuçlar (28 Ekim 2026, doğrulama kümesi 2014; test açılmadı)
+
+| Model | ROC-AUC | KS | Brier |
+|---|---|---|---|
+| Lojistik regresyon (3. hafta) | 0,651 | 0,219 | 0,242 |
+| XGBoost, sabit parametre + erken durdurma (206 ağaç) – **ana model** | 0,656 | 0,227 | 0,114 |
+| LightGBM, sabit parametre + erken durdurma (150 ağaç) | 0,656 | 0,227 | 0,114 |
+
+Kalibrasyon: Platt (Tem–Ara 2014'te Brier 0,1168, ECE 0,009). Geçici eşikler kalibre olasılıkta 0,10 / 0,20:
+Düşük %34 (batık %7,1), Orta %51 (%15,3), Yüksek %15 (%25,8). Model sürümü `xgb-fixed-platt-2026w4`.
+Optuna araması (40 deneme/model, 8 çekirdek) 8 GB RAM'li dizüstünde aşırı ısınma nedeniyle durduruldu; 5. haftada hafif ayarla çalıştırılacak.
+
+Not (macOS, Homebrew yoksa): XGBoost ve LightGBM OpenMP kitaplığı (`libomp.dylib`) ister. scikit-learn'ün kendi kopyası bağlanabilir:
+
+```bash
+ln -sf "$PWD/.venv/lib/python3.12/site-packages/sklearn/.dylibs/libomp.dylib" "$(.venv/bin/python -c 'import sys;print(sys.base_prefix)')/lib/libomp.dylib"
+```
 
 ## Haftalık ilerleme
 
 - Hafta 1: Proje planı, 7 iş paketi, H1–H8 hedefleri
 - Hafta 2: İP 2 veri hazırlama
 - Hafta 3: İP 3 ilk yarı – ön işleme hattı, lojistik regresyon temel çizgisi, FastAPI / Next.js iskeletleri
-- Hafta 4 (plan): XGBoost / LightGBM, Optuna, kalibrasyon; PostgreSQL bağlantısı; başvuru formu sayfası
+- Hafta 4: İP 3 ikinci yarı – XGBoost / LightGBM (erken durdurma), Platt kalibrasyonu, kalibre eşikler; veritabanı katmanı (SQLAlchemy, SQLite / PostgreSQL) ve başvuru geçmişi uç noktaları; ön yüz form / sonuç / geçmiş sayfaları; gecikme sayısı yan denemesi
+- Hafta 5 (plan): Optuna araması (hafif ayar) ve ek değişkenler; İP 4 net kâr eğrisiyle kalıcı eşikler; PostgreSQL konteynerinde canlı test; SHAP gerekçeleri

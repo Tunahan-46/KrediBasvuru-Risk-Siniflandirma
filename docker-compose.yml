@@ -1,0 +1,21 @@
+# Geliştirme için PostgreSQL (4. hafta). Başlatma: docker compose up -d db
+# Ardından: DATABASE_URL=postgresql+psycopg://kredilens:kredilens@localhost:5432/kredilens \
+#           .venv/bin/uvicorn backend.app.main:app --port 8000
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: kredilens
+      POSTGRES_PASSWORD: kredilens
+      POSTGRES_DB: kredilens
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kredilens"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  pgdata:
